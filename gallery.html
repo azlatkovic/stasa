@@ -1,0 +1,121 @@
+<style type="text/css">
+  * {
+      margin: 0;
+      padding: 0;
+  }
+  .imgbox {
+      display: grid;
+      height: 100%;
+      background-color: black;
+  }
+  .center-fit {
+      max-width: 100%;
+      max-height: 100vh;
+      margin: auto;
+  }
+</style>
+
+<html>
+
+  <head>
+  </head>
+
+  <body>
+    <div id="imgboxId" class="imgbox">
+      <img id="imgId1" class="center-fit" style="object-fit:scale-down;" src="https://raw.githubusercontent.com/azlatkovic/stasa/main/1.jpg"></img>
+    </div>
+  </body>
+
+</html>
+
+<script src="https://ajax.googleapis.com/ajax/libs/jquery/3.2.1/jquery.min.js"></script>
+
+<script>
+  
+  $(document).ready(function () {
+      initGallery();
+  });
+
+  let currentIndex = null;
+  let totalNumberOfImages = 30;
+  let cachedImagesNumber = 5;
+  let downloading = [];
+
+  let initGallery = function() {
+
+      currentIndex = null;
+      
+      for(let i = 1; i <= cachedImagesNumber; i++) {
+          appendImage(i);
+      }
+
+      $('#imgboxId').unbind('click').on('click', function() {
+          nextSlide();
+      });
+  }
+
+  let appendImage = function(index) {
+      let i = index;
+      while (i > totalNumberOfImages) {
+          i -= totalNumberOfImages;
+      }
+
+      let imgId = 'imgId' + i;
+      if ($('#' + imgId).length == 0) {
+          let src = 'https://raw.githubusercontent.com/azlatkovic/stasa/main/' + i + '.jpg';
+          $('#imgboxId').append(
+              '<img id="'
+                  + imgId
+                  + '" class="center-fit" src="'
+                  + src
+                  + '" hidden></img>');
+      }
+  }
+  
+  let nextSlide = function() {
+      if (currentIndex == null) {
+          // Initial
+          currentIndex = totalNumberOfImages;
+      }
+      currentIndex++;
+      if (currentIndex > totalNumberOfImages) {
+          currentIndex = 1;
+      }
+
+      // Start downloading
+      appendImage(currentIndex + cachedImagesNumber);
+
+      let currentImgId = 'imgId' + currentIndex;
+      if ($('#' + currentImgId).length == 0) {
+          let src = 'https://raw.githubusercontent.com/azlatkovic/stasa/main/' + currentIndex + '.jpg';
+          $('#imgboxId').append(
+              '<img id="'
+                  + currentImgId
+                  + '" class="center-fit" style="object-fit:scale-down;" src="'
+                  + src
+                  + '"></img>');
+      }
+      $('.center-fit').hide();
+      $('#' + currentImgId).show();
+      startFullScreen();
+  }
+
+  let startFullScreen = function() {
+      
+      // Set the image to full screen
+      const element = document.getElementById('imgboxId');
+      if(element.requestFullscreen) {
+          element.requestFullscreen();        // W3C spec
+      }
+      else if (element.mozRequestFullScreen) {
+          element.mozRequestFullScreen();     // Firefox
+      }
+      else if (element.webkitRequestFullscreen) {
+          element.webkitRequestFullscreen();  // Safari
+      }
+      else if(element.msRequestFullscreen) {
+          element.msRequestFullscreen();      // IE/Edge
+      }
+  }
+
+</script>
